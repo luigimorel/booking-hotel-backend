@@ -35,7 +35,7 @@ func Config() {
 	if err != nil {
 		log.Println(err)
 	} else {
-		fmt.Println("Connected to the database")
+		fmt.Println("Connected to the database!")
 	}
 
 	DB.Debug().AutoMigrate(&models.User{})
