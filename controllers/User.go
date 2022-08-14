@@ -18,6 +18,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&users)
 }
 
+// GetUserById ... Get one user by id
 func GetUserById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
