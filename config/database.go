@@ -17,10 +17,10 @@ var (
 )
 
 func Config() {
-	e := godotenv.Load()
+	error := godotenv.Load()
 
-	if e != nil {
-		log.Println(e)
+	if error != nil {
+		log.Println(error)
 	}
 
 	username := os.Getenv("DB_USERNAME")
