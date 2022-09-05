@@ -1,11 +1,9 @@
 package routes
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -13,10 +11,6 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 	_ "github.com/swaggo/http-swagger/example/gorilla/docs"
 )
-
-func baseRoute(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World! %s", time.Now())
-}
 
 func Routes() {
 	err := godotenv.Load()
@@ -27,7 +21,6 @@ func Routes() {
 	port := os.Getenv("PORT")
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", baseRoute)
 	router.PathPrefix("/api/v1/swagger/").Handler(httpSwagger.WrapHandler)
 
 	router.HandleFunc("/api/v1/users", controllers.GetUsers).Methods("GET")
@@ -36,5 +29,5 @@ func Routes() {
 	router.HandleFunc("/api/v1/user/{id}", controllers.DeleteUserById).Methods("DELETE")
 	router.HandleFunc("/api/v1/register", controllers.UpdateUserById).Methods("PUT")
 
-	http.ListenAndServe(port, router)
+	http.ListenAndServe(":"+port, router)
 }
