@@ -8,11 +8,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/morelmiles/booking-backend/controllers"
+	"github.com/morelmiles/booking-backend/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
 	_ "github.com/swaggo/http-swagger/example/gorilla/docs"
 )
 
 func Routes() {
+	middleware.InitLogger()
 	err := godotenv.Load()
 
 	if err != nil {

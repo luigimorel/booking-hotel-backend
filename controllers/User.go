@@ -7,10 +7,17 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/morelmiles/booking-backend/config"
+	"github.com/morelmiles/booking-backend/middleware"
 	"github.com/morelmiles/booking-backend/models"
+	"golang.org/x/crypto/bcrypt"
 )
 
+func ComparePassword(password string, hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
 func GetUsers(w http.ResponseWriter, r *http.Request) {
+
 	var users []models.User
 
 	config.DB.Find(&users)
@@ -40,12 +47,16 @@ func checkIfUserExists(userId string) bool {
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var user models.User
 
 	json.NewDecoder(r.Body).Decode(&user)
 
+	// Fix this middleware
+	if _, err := middleware.HashPassword(user.Password); err != nil {
+		log.Printf("Error: %d", err)
+		return
+	}
 	newUser := config.DB.Create(&user)
 	err := newUser.Error
 
@@ -63,7 +74,9 @@ func UpdateUserById(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("user not found!")
 		return
 	}
+
 	var user models.User
+
 	config.DB.First(&user, userId)
 	json.NewDecoder(r.Body).Decode(&user)
 	config.DB.Save(&user)
