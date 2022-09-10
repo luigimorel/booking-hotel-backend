@@ -26,7 +26,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&users)
 }
 
-// GetUserById ... Get one user by id
+// GetUserById - Fetches a list of all users.
 func GetUserById(w http.ResponseWriter, r *http.Request) {
 	userId := mux.Vars(r)["id"]
 	if !checkIfUserExists(userId) {
@@ -46,6 +46,7 @@ func checkIfUserExists(userId string) bool {
 	return user.ID != 0
 }
 
+// CreateUser - Creates a new user
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	var user models.User
@@ -67,6 +68,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// UpdateUserById -  Updates a single user by the ID specified
 func UpdateUserById(w http.ResponseWriter, r *http.Request) {
 	userId := mux.Vars(r)["id"]
 	if !checkIfUserExists(userId) {
@@ -84,6 +86,7 @@ func UpdateUserById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
+// DeleteUserById - Updates a single user by the ID specified.
 func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userId := mux.Vars(r)["id"]
