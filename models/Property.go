@@ -19,4 +19,5 @@ type Property struct {
 	Description string         `gorm:"type:text;not null;" json:"description"`
 	Location    string         `gorm:"size:255;not null;" json:"location"`
 	HouseRules  pq.StringArray `gorm:"size:255;" json:"houseRules"`
+	Images      pq.StringArray `gorm:"type:text;" json:"images"`
 }
