@@ -1,12 +1,9 @@
 package routes
 
 import (
-	"log"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"github.com/morelmiles/booking-backend/controllers"
 	"github.com/morelmiles/booking-backend/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -14,12 +11,6 @@ import (
 
 func Routes() {
 	middleware.InitLogger()
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Println(err)
-	}
-	port := os.Getenv("PORT")
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.PathPrefix("/api/v1/swagger/").Handler(httpSwagger.WrapHandler)
@@ -38,5 +29,5 @@ func Routes() {
 	router.HandleFunc("/api/v1/property/{id}", controllers.DeletePropertyById).Methods("DELETE")
 	router.HandleFunc("/api/v1/property/{id}", controllers.UpdatePropertyById).Methods("PUT")
 
-	http.ListenAndServe(":"+port, router)
+	http.ListenAndServe(":8080", router)
 }

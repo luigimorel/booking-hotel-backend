@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: database
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+      - POSTGRES_HOST_AUTH_METHOD=trust
+
+    restart: on-failure
+    networks:
+      - bookingbackend
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: rest_api
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    networks:
+      - bookingbackend
+
+volumes:
+  db_data:
+
+
+networks:
+  bookingbackend:
+    driver: bridge

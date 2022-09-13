@@ -7,4 +7,3 @@
 - Postgres
 - JWT
 - godotenv
-
