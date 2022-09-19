@@ -14,7 +14,7 @@ func Routes() {
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.PathPrefix("/api/v1/swagger/").Handler(httpSwagger.WrapHandler)
-
+	router.HandleFunc("/", controllers.Home).Methods("GET")
 	// Users
 	router.HandleFunc("/api/v1/users", controllers.GetUsers).Methods("GET")
 	router.HandleFunc("/api/v1/user/{id}", controllers.GetUserById).Methods("GET")

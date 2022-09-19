@@ -4,10 +4,11 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	ID          uint32 `gorm:"primary_key;auto_increment" json:"id"`
-	FirstName   string `gorm:"size:255;not null;" json:"first_name"`
-	LastName    string `gorm:"size:255;not null;" json:"last_name"`
-	Email       string `gorm:"size:100;not null;unique" json:"email"`
-	Description string `gorm:"type:text;not null;" json:"description"`
-	Password    string `gorm:"size:100;not null;" json:"password"`
+	ID          uint32   `gorm:"primary_key;auto_increment" json:"id"`
+	FirstName   string   `gorm:"size:255;not null;" json:"first_name"`
+	LastName    string   `gorm:"size:255;not null;" json:"last_name"`
+	Email       string   `gorm:"size:100;not null;unique" json:"email"`
+	Description string   `gorm:"type:text;not null;" json:"description"`
+	Password    string   `gorm:"size:100;not null;" json:"password"`
+	Property    Property `gorm:"foreignKey:id;references:ID" json:"property,omitempty"`
 }
