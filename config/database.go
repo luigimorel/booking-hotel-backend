@@ -39,5 +39,9 @@ func Config() {
 		fmt.Println("Connected to the database!")
 	}
 
-	DB.Debug().AutoMigrate(&models.User{}, &models.Property{})
+	DB.Debug().AutoMigrate(
+		&models.User{},
+		&models.Property{},
+		&models.HouseRule{},
+	)
 }
