@@ -45,11 +45,10 @@ func GetPropertyById(w http.ResponseWriter, r *http.Request) {
 func CreateProperty(w http.ResponseWriter, r *http.Request) {
 
 	var property models.Property
-
+	var err error
 	json.NewDecoder(r.Body).Decode(&property)
 
-	newProperty := config.DB.Create(&property)
-	err := newProperty.Error
+	config.DB.Create(&property)
 
 	if err != nil {
 		log.Panic(err)

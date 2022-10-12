@@ -48,8 +48,8 @@ func checkIfUserExists(userId string) bool {
 
 // CreateUser - Creates a new user
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-
 	var user models.User
+	var err error
 
 	json.NewDecoder(r.Body).Decode(&user)
 
@@ -58,8 +58,9 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error: %d", err)
 		return
 	}
+
 	newUser := config.DB.Create(&user)
-	err := newUser.Error
+	err = newUser.Error
 
 	if err != nil {
 		log.Panic(err)
