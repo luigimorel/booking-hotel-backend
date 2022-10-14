@@ -44,16 +44,17 @@ func GetPropertyById(w http.ResponseWriter, r *http.Request) {
 // CreateProperty - Creates a new property
 func CreateProperty(w http.ResponseWriter, r *http.Request) {
 
-	var property models.Property
+	var job models.Property
 	var err error
-	json.NewDecoder(r.Body).Decode(&property)
 
-	config.DB.Create(&property)
+	json.NewDecoder(r.Body).Decode(&job)
+
+	config.DB.Create(&job)
 
 	if err != nil {
 		log.Panic(err)
 	} else {
-		json.NewEncoder(w).Encode(&property)
+		json.NewEncoder(w).Encode(&job)
 	}
 }
 
