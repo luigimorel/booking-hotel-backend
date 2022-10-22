@@ -9,6 +9,7 @@ import (
 	"github.com/morelmiles/booking-backend/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var (
@@ -31,7 +32,7 @@ func Config() {
 
 	dbLink := fmt.Sprintf("host=%s user=%s dbname=%s port=%s sslmode=disable TimeZone=Africa/Nairobi password=%s",
 		dbHost, username, dbName, dbPort, password)
-	DB, err = gorm.Open(postgres.Open(dbLink), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dbLink), &gorm.Config{Logger: logger.Default.LogMode(logger.Warn)})
 
 	if err != nil {
 		log.Println(err)
@@ -42,6 +43,5 @@ func Config() {
 	DB.Debug().AutoMigrate(
 		&models.User{},
 		&models.Property{},
-		&models.HouseRule{},
 	)
 }
