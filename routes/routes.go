@@ -24,20 +24,14 @@ func Routes() {
 	router.HandleFunc("/api/v1/register", controllers.CreateUser).Methods("POST")
 	router.HandleFunc("/api/v1/user/{id}", controllers.DeleteUserById).Methods("DELETE")
 	router.HandleFunc("/api/v1/user/{id}", controllers.UpdateUserById).Methods("PUT")
+	router.HandleFunc("/api/v1/user/properties/{id}", controllers.GetAllPropertiesByUser).Methods("GET")
 
 	// Properties
 	router.HandleFunc("/api/v1/properties", controllers.GetProperties).Methods("GET")
-	router.HandleFunc("/api/v1/property/{id}", controllers.GetPropertyById).Methods("GET")
+	router.HandleFunc("/api/v1/properties/{id}", controllers.GetPropertyById).Methods("GET")
 	router.HandleFunc("/api/v1/properties", controllers.CreateProperty).Methods("POST")
-	router.HandleFunc("/api/v1/property/{id}", controllers.DeletePropertyById).Methods("DELETE")
-	router.HandleFunc("/api/v1/property/{id}", controllers.UpdatePropertyById).Methods("PUT")
-
-	// House Rules
-	router.HandleFunc("/api/v1/house_rules", controllers.GetHouseRules).Methods("GET")
-	router.HandleFunc("/api/v1/house_rule/{id}", controllers.GetHouseRuleById).Methods("GET")
-	router.HandleFunc("/api/v1/house_rules", controllers.CreateHouseRule).Methods("POST")
-	router.HandleFunc("/api/v1/house_rule/{id}", controllers.DeleteHouseRuleById).Methods("DELETE")
-	router.HandleFunc("/api/v1/house_rule/{id}", controllers.UpdateHouseRuleById).Methods("PUT")
+	router.HandleFunc("/api/v1/properties/{id}", controllers.DeletePropertyById).Methods("DELETE")
+	router.HandleFunc("/api/v1/properties/{id}", controllers.UpdatePropertyById).Methods("PUT")
 
 	http.ListenAndServe(":8080", router)
 }
