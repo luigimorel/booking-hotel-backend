@@ -101,3 +101,13 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 	config.DB.Delete(&user, userId)
 	json.NewEncoder(w).Encode(user)
 }
+
+func GetAllPropertiesByUser(w http.ResponseWriter, r *http.Request) {
+	userId := mux.Vars(r)["id"]
+
+	var user models.User
+	var properties models.Property
+
+	config.DB.Model(&user).Find(properties).Where("id = ?", userId)
+	json.NewEncoder(w).Encode(user)
+}
