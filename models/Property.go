@@ -9,6 +9,7 @@ import (
 
 type Property struct {
 	gorm.Model
+	ID          uint32         `gorm:"primary_key;auto_increment" json:"id"`
 	CheckInTime string         `gorm:"size:255;not null;default:current_timestamp" json:"checkin_time"`
 	Guests      uint32         `gorm:"size:255;not null;" json:"guests"`
 	Beds        uint32         `gorm:"size:255;not null;" json:"beds"`
@@ -16,11 +17,10 @@ type Property struct {
 	Bathrooms   uint32         `gorm:"size:255;not null;" json:"bathrooms"`
 	Description string         `gorm:"type:text;" json:"desc"`
 	Location    string         `gorm:"size:255;not null;" json:"location"`
-	Images      string         `gorm:"type:text;" json:"images"`
-	Owner       User           `json:"owner"`
-	OwnerID     uint32         `gorm:"not null;" json:"owner_id"`
-	HouseRules  []HouseRule    `gorm:"many2many:house_rules;"`
-	Tags        pq.StringArray `gorm:"type:varchar(64)[]"`
+	Images      pq.StringArray `gorm:"type:varchar(64)[]" json:"images"`
+	HouseRules  pq.StringArray `gorm:"type:varchar(64)[]" json:"house_rules"`
+	Owner       User           `json:"user"`
+	OwnerId     uint32         `sql:"type:int REFERENCES user(id)" json:"user_id"`
 }
 
 func (p *Property) Validate() error {
