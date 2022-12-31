@@ -13,25 +13,31 @@ func Routes() {
 	middleware.InitLogger()
 
 	router := mux.NewRouter().StrictSlash(true)
-	router.PathPrefix("/api/v1/swagger/").Handler(httpSwagger.WrapHandler)
+
+	// Swagger docs
+	router.PathPrefix("/api/v1/swagger").Handler(httpSwagger.WrapHandler)
 
 	// Home
 	router.HandleFunc("/", controllers.Home).Methods("GET")
 
+	// Auth
+	router.HandleFunc("/api/v1/auth/login", middleware.SetMiddlewareJSON(controllers.Login)).Methods("POST")
+
 	// Users
-	router.HandleFunc("/api/v1/users", controllers.GetUsers).Methods("GET")
-	router.HandleFunc("/api/v1/user/{id}", controllers.GetUserById).Methods("GET")
-	router.HandleFunc("/api/v1/register", controllers.CreateUser).Methods("POST")
-	router.HandleFunc("/api/v1/user/{id}", controllers.DeleteUserById).Methods("DELETE")
-	router.HandleFunc("/api/v1/user/{id}", controllers.UpdateUserById).Methods("PUT")
-	router.HandleFunc("/api/v1/user/properties/{id}", controllers.GetAllPropertiesByUser).Methods("GET")
+	router.HandleFunc("/api/v1/users", middleware.SetMiddlewareJSON(controllers.GetUsers)).Methods("GET")
+	router.HandleFunc("/api/v1/users/{id}", middleware.SetMiddlewareJSON(controllers.GetUserById)).Methods("GET")
+	router.HandleFunc("/api/v1/register", middleware.SetMiddlewareJSON(controllers.CreateUser)).Methods("POST")
+	router.HandleFunc("/api/v1/users/{id}", middleware.SetMiddlewareAuthentication(controllers.DeleteUserById)).Methods("DELETE")
+	router.HandleFunc("/api/v1/users/{id}", middleware.SetMiddlewareAuthentication(controllers.UpdateUserById)).Methods("PUT")
+	router.HandleFunc("/api/v1/users/{id}/properties", middleware.SetMiddlewareJSON(controllers.GetAllPropertiesByUser)).Methods("GET")
 
 	// Properties
-	router.HandleFunc("/api/v1/properties", controllers.GetProperties).Methods("GET")
-	router.HandleFunc("/api/v1/properties/{id}", controllers.GetPropertyById).Methods("GET")
-	router.HandleFunc("/api/v1/properties", controllers.CreateProperty).Methods("POST")
-	router.HandleFunc("/api/v1/properties/{id}", controllers.DeletePropertyById).Methods("DELETE")
-	router.HandleFunc("/api/v1/properties/{id}", controllers.UpdatePropertyById).Methods("PUT")
+	router.HandleFunc("/api/v1/properties", middleware.SetMiddlewareJSON(controllers.GetProperties)).Methods("GET")
+	router.HandleFunc("/api/v1/properties/{id}", middleware.SetMiddlewareAuthentication(controllers.GetPropertyById)).Methods("GET")
+	router.HandleFunc("/api/v1/properties", middleware.SetMiddlewareAuthentication(controllers.CreateProperty)).Methods("POST")
+	router.HandleFunc("/api/v1/properties/{id}", middleware.SetMiddlewareAuthentication(controllers.DeletePropertyById)).Methods("DELETE")
+	router.HandleFunc("/api/v1/properties/{id}", middleware.SetMiddlewareAuthentication(controllers.UpdatePropertyById)).Methods("PUT")
 
+	// Server port
 	http.ListenAndServe(":8080", router)
 }
