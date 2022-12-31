@@ -26,7 +26,28 @@ type Property struct {
 func (p *Property) Validate() error {
 
 	if p.Guests == 0 {
+		return errors.New("the number of guests is required")
+	}
+	if p.CheckInTime == "" {
 		return errors.New("check in time is required")
+	}
+	if p.Beds == 0 {
+		return errors.New("number of beds is required")
+	}
+	if p.Bathrooms == 0 {
+		return errors.New("number of bathrooms is required")
+	}
+	if p.Description == "" {
+		return errors.New("description is required")
+	}
+	if p.Location == "" {
+		return errors.New("location is required")
+	}
+	if p.Images[0] == "" {
+		return errors.New("images are required")
+	}
+	if p.HouseRules[0] == "" {
+		return errors.New("house rules are required")
 	}
 
 	return nil

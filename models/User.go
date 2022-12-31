@@ -1,8 +1,11 @@
 package models
 
 import (
-	"fmt"
+	"errors"
+	"html"
+	"strings"
 
+	"github.com/badoux/checkmail"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -17,21 +20,92 @@ type User struct {
 	Password  string `gorm:"size:100;not null;" json:"password"`
 }
 
-func HashPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", fmt.Errorf("failed to hash password: %w", err)
-	}
-
-	return string(hashedPassword), nil
+type SignInInput struct {
+	Email    string `json:"email"  binding:"required"`
+	Password string `json:"password"  binding:"required"`
 }
 
-func (u *User) BeforeSave() error {
-	hashedPassword, err := HashPassword(u.Password)
+func Hash(password string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+}
+
+func VerifyPassword(hashedPassword, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
+func (user *User) BeforeSave() error {
+	hashedPassword, err := Hash(user.Password)
 	if err != nil {
 		return err
 	}
-
-	u.Password = string(hashedPassword)
+	user.Password = string(hashedPassword)
 	return nil
+}
+
+func (user *User) Prepare() {
+	user.ID = 0
+	user.FirstName = html.EscapeString(strings.TrimSpace(user.FirstName))
+	user.Bio = html.EscapeString(strings.TrimSpace(user.Bio))
+	user.Email = html.EscapeString(strings.TrimSpace(user.Email))
+	user.LastName = html.EscapeString(strings.TrimSpace(user.LastName))
+}
+
+func (user *User) Validate(action string) error {
+	switch strings.ToLower(action) {
+	case "update":
+		if user.LastName == "" {
+			return errors.New("name is required")
+		}
+		if user.FirstName == "" {
+			return errors.New("first name is required")
+		}
+		if user.Password == "" {
+			return errors.New("password is required")
+		}
+		if user.Email == "" {
+			return errors.New("email is required")
+		}
+		if user.Bio == "" {
+			return errors.New("bio is required")
+		}
+		if err := checkmail.ValidateFormat(user.Email); err != nil {
+			return errors.New("email is invalid")
+		}
+
+		return nil
+
+	case "login":
+		if user.Password == "" {
+			return errors.New("password is required")
+		}
+		if user.Email == "" {
+			return errors.New("email is required")
+		}
+		if err := checkmail.ValidateFormat(user.Email); err != nil {
+			return errors.New("email is invalid")
+		}
+		return nil
+
+	default:
+		if user.LastName == "" {
+			return errors.New("last name is required")
+		}
+		if user.FirstName == "" {
+			return errors.New("first name is required")
+		}
+		if user.Password == "" {
+			return errors.New("password is required")
+		}
+		if user.Email == "" {
+			return errors.New("email is required")
+		}
+		if user.Bio == "" {
+			return errors.New("bio is required")
+		}
+		if err := checkmail.ValidateFormat(user.Email); err != nil {
+			return errors.New("email is invalid")
+		}
+
+		return nil
+	}
 }
