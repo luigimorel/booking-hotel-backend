@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -48,8 +49,25 @@ func checkIfUserExists(userId string) bool {
 
 // CreateUser - Creates a new user
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	var err error
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		middleware.ERROR(w, http.StatusUnprocessableEntity, err)
+	}
+	user := models.User{}
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		middleware.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	user.Prepare()
+	user.BeforeSave()
+	err = user.Validate("")
+	if err != nil {
+		middleware.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
 
 	json.NewDecoder(r.Body).Decode(&user)
 
@@ -102,12 +120,63 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
+// GetAllPropertiesByUser fetches all properties owned by user.
 func GetAllPropertiesByUser(w http.ResponseWriter, r *http.Request) {
 	userId := mux.Vars(r)["id"]
 
 	var user models.User
 	var properties models.Property
 
-	config.DB.Model(&user).Find(properties).Where("id = ?", userId)
+	config.DB.Model(&properties).Find(user).Where("id = ?", userId)
 	json.NewEncoder(w).Encode(user)
+}
+
+// Login
+func Login(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		middleware.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	user := models.User{}
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		middleware.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	user.Prepare()
+
+	err = user.Validate("login")
+	if err != nil {
+		middleware.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	token, err := SignIn(user.Email, user.Password)
+	if err != nil {
+		formattedError := middleware.FormatError(err.Error())
+		middleware.ERROR(w, http.StatusUnprocessableEntity, formattedError)
+		return
+	}
+	middleware.JSON(w, http.StatusOK, token)
+
+}
+
+// Sign in
+
+func SignIn(email, password string) (string, error) {
+	var err error
+
+	user := models.User{}
+	err = config.DB.Debug().Model(models.User{}).Where("email=?", email).Take(&user).Error
+
+	if err != nil {
+		return " ", err
+	}
+
+	err = models.VerifyPassword(user.Password, password)
+	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
+		return "", err
+	}
+	return middleware.CreateToken(user.ID)
 }
