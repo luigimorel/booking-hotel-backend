@@ -1,21 +1,24 @@
 package middleware
 
 import (
+	"errors"
 	"net/http"
-	"os"
-
-	"github.com/gorilla/sessions"
 )
 
-var store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		next(w, r)
+	}
+}
 
-func AuthHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "session")
-
-	_, ok := session.Values["user"]
-
-	if !ok {
-		http.Redirect(w, r, os.Getenv("BASE_URL"), http.StatusTemporaryRedirect)
-
+func SetMiddlewareAuthentication(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := TokenValid(r)
+		if err != nil {
+			ERROR(w, http.StatusUnauthorized, errors.New("Unauthorized"))
+			return
+		}
+		next(w, r)
 	}
 }
