@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -124,7 +125,7 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 
 // Login - Allows the user to login
 func Login(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		middleware.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
