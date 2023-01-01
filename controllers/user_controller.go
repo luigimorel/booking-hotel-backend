@@ -34,7 +34,9 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("user not found!")
 		return
 	}
-	var user models.User
+
+	user := models.User{}
+
 	config.DB.First(&user, userId)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(user)
@@ -120,18 +122,7 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-// GetAllPropertiesByUser fetches all properties owned by user.
-func GetAllPropertiesByUser(w http.ResponseWriter, r *http.Request) {
-	userId := mux.Vars(r)["id"]
-
-	var user models.User
-	var properties models.Property
-
-	config.DB.Model(&properties).Find(user).Where("id = ?", userId)
-	json.NewEncoder(w).Encode(user)
-}
-
-// Login
+// Login - Allows the user to login
 func Login(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -162,12 +153,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Sign in
-
+// Sign in - enables the user to sign in into their account
 func SignIn(email, password string) (string, error) {
 	var err error
 
-	user := models.User{}
+	user := models.SignInInput{}
 	err = config.DB.Debug().Model(models.User{}).Where("email=?", email).Take(&user).Error
 
 	if err != nil {
@@ -179,4 +169,13 @@ func SignIn(email, password string) (string, error) {
 		return "", err
 	}
 	return middleware.CreateToken(user.ID)
+}
+
+// GetAllPropertiesByUser fetches all properties owned by user.
+// Figure own how to write this on Gorm - select * from users join properties on users.id=properties.owner_id;
+func GetAllPropertiesByUser(w http.ResponseWriter, r *http.Request) {
+	var users models.User
+	config.DB.Raw("SELECT * FROM users JOIN properties ON users.id = properties.owner_id")
+
+	json.NewEncoder(w).Encode(users)
 }

@@ -23,6 +23,7 @@ type User struct {
 type SignInInput struct {
 	Email    string `json:"email"  binding:"required"`
 	Password string `json:"password"  binding:"required"`
+	ID       uint32 `gorm:"primary_key;auto_increment" json:"id"`
 }
 
 func Hash(password string) ([]byte, error) {

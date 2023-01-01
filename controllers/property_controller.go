@@ -37,7 +37,6 @@ func GetPropertyById(w http.ResponseWriter, r *http.Request) {
 	}
 	var property models.Property
 	config.DB.First(&property, propertyId)
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(property)
 }
 
@@ -72,13 +71,11 @@ func UpdatePropertyById(w http.ResponseWriter, r *http.Request) {
 	config.DB.First(&property, propertyId)
 	json.NewDecoder(r.Body).Decode(&property)
 	config.DB.Save(&property)
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(property)
 }
 
 // DeletePropertyById - Updates a single property by the ID specified.
 func DeletePropertyById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	propertyId := mux.Vars(r)["id"]
 	if !checkIfPropertyExists(propertyId) {
 		w.WriteHeader(http.StatusNotFound)
