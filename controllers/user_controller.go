@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -53,7 +52,7 @@ func checkIfUserExists(userId string) bool {
 // CreateUser - Creates a new user
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		middleware.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
