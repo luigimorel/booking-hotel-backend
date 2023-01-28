@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -73,20 +72,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(r.Body).Decode(&user)
 
-	// Fix this middleware
-	if _, err := middleware.HashPassword(user.Password); err != nil {
-		log.Printf("Error: %d", err)
-		return
-	}
-
-	newUser := config.DB.Create(&user)
-	err = newUser.Error
-
-	if err != nil {
-		log.Panic(err)
-	} else {
-		json.NewEncoder(w).Encode(&user)
-	}
 }
 
 // UpdateUserById -  Updates a single user by the ID specified
